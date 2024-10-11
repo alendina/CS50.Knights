@@ -12,32 +12,83 @@ CKnave = Symbol("C is a Knave")
 # Puzzle 0
 # A says "I am both a knight and a knave."
 knowledge0 = And(
-    # TODO
+    Or(AKnight,AKnave),
+    #Not(And(AKnight,AKnave)),
+    
+    Implication(AKnight, And(AKnight, AKnave)),
+    Implication(AKnave, Not(And(AKnight, AKnave)))
 )
 
 # Puzzle 1
 # A says "We are both knaves."
 # B says nothing.
 knowledge1 = And(
-    # TODO
+    Or(AKnight,AKnave),
+    Or(BKnight,BKnave),
+    #Not(And(AKnight,AKnight)),
+    #Not(And(BKnight,BKnight)),
+
+    Implication(AKnight, And(AKnave,BKnave)),
+    Implication(AKnave, Not(And(AKnave,BKnave)))
+    
 )
 
 # Puzzle 2
 # A says "We are the same kind."
 # B says "We are of different kinds."
 knowledge2 = And(
-    # TODO
+    Or(AKnight,AKnave),
+    Or(BKnight,BKnave),
+
+    Implication(AKnight, Biconditional(AKnave,BKnave)),
+    Implication(AKnave, Not(Biconditional(AKnave,BKnave))),
+    Implication(BKnight, Not(Biconditional(AKnave,BKnave))),
+    Implication(BKnave, Biconditional(AKnave,BKnave))
+   
 )
+
 
 # Puzzle 3
 # A says either "I am a knight." or "I am a knave.", but you don't know which.
 # B says "A said 'I am a knave'."
 # B says "C is a knave."
 # C says "A is a knight."
-knowledge3 = And(
-    # TODO
-)
 
+knowledge3 = And(
+    Or(AKnight,AKnave),
+    Or(BKnight,BKnave),
+    Or(CKnight,CKnave),
+
+    Implication(AKnight, Or(AKnight,AKnave)),
+    Implication(AKnave, Not(Or(AKnight,AKnave))),
+
+    Implication(BKnight, Implication(AKnight, AKnave)),
+    Implication(BKnave, Not(Implication(AKnight, AKnave))),
+    Implication(BKnight, CKnave),
+    Implication(BKnave, Not(CKnave)),
+
+    Implication(CKnight, AKnight),
+    Implication(CKnave, Not(AKnight))
+)
+knowledge3 = And(
+    Or(AKnight, AKnave),
+    Or(BKnight, BKnave),
+    Or(CKnight, CKnave),
+
+    Implication(AKnight, Or(AKnight, AKnave)),
+    Implication(AKnave, Not(Or(AKnight, AKnave))),
+
+    Implication(BKnight, And(
+        Implication(AKnight, AKnave),
+        Implication(AKnave, AKnave)
+    )),
+
+    Implication(BKnight, CKnave),
+    Implication(BKnave, Not(CKnave)),
+
+    Implication(CKnight, AKnight),
+    Implication(CKnave, Not(AKnight)),
+)
 
 def main():
     symbols = [AKnight, AKnave, BKnight, BKnave, CKnight, CKnave]
@@ -47,8 +98,10 @@ def main():
         ("Puzzle 2", knowledge2),
         ("Puzzle 3", knowledge3)
     ]
+
     for puzzle, knowledge in puzzles:
-        print(puzzle)
+        print('\n', puzzle)
+        print('\n', knowledge1.formula(),'\n')
         if len(knowledge.conjuncts) == 0:
             print("    Not yet implemented.")
         else:
